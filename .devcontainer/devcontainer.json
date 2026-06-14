@@ -1,5 +1,5 @@
 {
-  "name": "My Custom R Environment",
+  "name": "My Docker in Docker Environment for running Docker Build / Command",
   "image": "visionarylabs/jupyter_r_install_packages:latest",
   "features": {
 	  "ghcr.io/devcontainers/features/docker-in-docker:2": {
