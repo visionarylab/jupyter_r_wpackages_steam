@@ -86,49 +86,6 @@ get_owned_games2 <- function(API_key, steam_id) {
   return (games)
 }
 
-
-
-# 测试2
-# 构建请求 URL
-url <- paste0(
-  "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/",
-  "?key=", API_key,
-  "&steamid=", steam_id,
-  "&include_appinfo=1",
-  "&include_played_free_games=1"
-)
-
-cat("🔍 正在测试连接 Steam API...\n")
-
-# ⏱️ 发送请求
-res <- tryCatch({
-  GET(url)  # ⚠️ 若未开代理可删除 use_proxy
-}, error = function(e) e)
-
-
-# 结果判断
-if (inherits(res, "response") && status_code(res) == 200) {
-  json <- fromJSON(content(res, "text", encoding = "UTF-8"))
-  game_count <- json$response$game_count
-  cat("✅ 成功连接 Steam API，游戏总数：", game_count, "\n")
-
-  # 输出前几个游戏名称和游玩时长
-  games <- json$response$games
-  if (!is.null(games)) {
-    head_df <- head(games[, c("appid", "name", "playtime_forever")])
-    print(head_df)
-  } else {
-    cat("⚠️ 没有返回游戏列表，可能该账号设置了隐私。\n")
-  }
-
-} else if (inherits(res, "response")) {
-  cat("❌ 请求失败，状态码：", status_code(res), "\n")
-  cat("响应内容：\n", content(res, "text", encoding = "UTF-8"), "\n")
-} else {
-  cat("❌ 无法连接 Steam API：", res$message, "\n")
-}
-
-
   games <- get_owned_games2(API_key, steam_id)
   if (!is.null(games)) {
     head_df <- head(games[, c("appid", "name", "playtime_forever")])

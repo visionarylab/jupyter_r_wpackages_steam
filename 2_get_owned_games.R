@@ -1,3 +1,33 @@
+# 配置项，需手动填写自己的Steam API、Steam ID、Notion API、Database ID
+# ==== Steam API和Steam ID配置（必须获取） ====
+API_key <- Sys.getenv("STEAM_WEBAPI_KEY")
+steam_id <- "76561198116745916"
+
+# ==== Notion API和Database ID（如果只想手动导入，可不获取） ====
+notion_token <- Sys.getenv("NOTION_TOKEN")
+database_id <- Sys.getenv("NOTION_DATABASE_ID")
+
+
+
+# ==== 抓取Steam数据需要的包 ====
+library(httr2) # 网络请求相关
+library(httr) # 网络请求相关
+
+library(rvest) # 网页和 XML 解析
+library(xml2) # 网页和 XML 解析
+
+library(dplyr) # 数据处理
+library(tibble) # 数据处理
+library(jsonlite) # 数据处理
+
+library(lubridate) # 时间处理
+library(openxlsx) # Excel 导出
+
+# ==== 将导出数据上传至Notion所需要的包（如果只想手动导入，可不加载） ====
+library(cli)  # 命令行美化输出
+library(glue)  # 字符串拼接（提示消息、上传状态）
+
+
 # ==== 获取拥有的游戏列表（支持 API Key 和 Steam ID）====
 get_owned_games <- function(API_key, steam_id) {
   
@@ -69,7 +99,7 @@ merge_api_and_web_games <- function(api_games, web_games) {
   write.csv(web_games, "web_games_debug.csv", row.names = FALSE)
   
   # 从网页抓取中只保留游戏ID、网页中的游戏名和网页时长（小时）
-  web_games <- web_games |> select(appid, name_web, hours_total_web)
+  ##web_games <- web_games |> select(appid, name_web, hours_total_web)
   
   combined <- full_join(api_games, web_games, by = "appid")
   
@@ -251,7 +281,8 @@ fetch_and_merge_all_games <- function(api_key = API_key, user_id = steam_id) {
     data.frame()
   })
   
-  web_games <- get_all_games_web(user_id)
+  #web_games <- get_all_games_web(user_id)
+  web_games <- NULL
   games <- merge_api_and_web_games(api_games, web_games)
   message(sprintf("🎮 合并完成：共 %d 个游戏", nrow(games)))
   return(games)
